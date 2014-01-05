@@ -1,4 +1,4 @@
-#Servo Motor Library
+#Servo Motor Module
 #Andrew M. Blasius
 
 '''

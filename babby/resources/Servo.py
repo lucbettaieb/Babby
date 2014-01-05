@@ -12,7 +12,7 @@ import time
 import RPi.GPIO as GPIO
 
 class servo:
-    def __init__(self,pin,degree,minPos,maxPos,freq = 50.0):
+    def __init__(self,pin,degree,minPos,maxPos,freq=50.0):
         '''minPos and maxPos are the pulse widths (in milliseconds)
         which correspond to 0 degrees and 180 degrees, respectively'''
         GPIO.setup(pin,GPIO.OUT)
@@ -20,18 +20,23 @@ class servo:
         self.lower = minPos / self.pulseTime
         self.upper = maxPos / self.pulseTime
         self.pin = GPIO.PWM(pin,freq)
-        cycle = self.getCycle(degree)
-        self.pin.start(cycle)
+        self.setPosition(degree)
+        self.pin.start(self.cycle)
         
-    def getCycle(self,degree):
+    def getCycle(self):
         #Uses affine map to calculate duty cycle from lower limit, upper limit and position
-        cycle = (self.lower*(1 - degree/180.0) + self.upper*(degree/180.0)) * 100
-        return cycle
+        self.cycle = (self.lower*(1 - self.angle/180.0) + self.upper*(self.angle/180.0)) * 100
+
         
     def setPosition(self,degree):
-        cycle = self.getCycle(degree)
-        self.pin.ChangeDutyCycle(cycle)
-    
+        if (degree < self.lower) or (degree > self.upper):
+            print 'Position outside of range'
+            return
+        else:
+            self.angle = degree
+            self.getCycle()
+            self.pin.ChangeDutyCycle(self.cycle)
+        
     def end(self):
         self.pin.stop()
     

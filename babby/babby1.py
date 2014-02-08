@@ -2,7 +2,7 @@
 #Andrew M. Blasius
 
 from math import abs,cos,acos,radians
-from resources import Map,ServoLib,MotorLib,Angle
+from resources import Map,Servo,Motor,Angle
 from Map import search,initMap
 from Servo import servo
 from Motor import motor

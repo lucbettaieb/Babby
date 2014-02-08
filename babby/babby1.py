@@ -12,7 +12,7 @@ import RPi.GPIO as GPIO
 class babby:
     def __init__(self,speed,maxspeed,legdistance,baseHeight,strutHeight
                  s1,s2,s3,s4,m1,m2,m3,m4,
-                 minPos,maxPos,initDegree=90,
+                 minPulseTime,maxPulseTime,initAngle=90,
                  serPort='/dev/ttyAMA0',baud=9600,tolerance=.01):
         ''' speed should be given in units [distance]/sec and legdistance should be consistent. 
             s1 through s4 (as inputs) are the pin numbers of the pins controlling the servo motors. (INT)
@@ -22,19 +22,19 @@ class babby:
             legdistance is the distance between Babby's Legs. (FLOAT)
             baseHeight is the height returned by the ARDUINO when measuring ground with a slope m=0. (FLOAT)
             strutHeight is the height (not length) of the static strut. (FLOAT)
-            minPos is the minimum angular position (in degrees) to which the servos can sweep (INT)
-            maxPos is the maximum angular position (in degrees) to which the servos can sweep (INT)
-            initDegree is the initial position of the servo motors. (INT)
+            minPulseTime is the minimum angular position (in degrees) to which the servos can sweep (INT)
+            maxPulseTime is the maximum angular position (in degrees) to which the servos can sweep (INT)
+            initAngle is the initial position of the servo motors. (INT)
             serPort is a string representing the address of the Rasperry Pi's serial port (STR)
             baud is the baudrate for the Raspberry Pi's serial port (INT)
             tolerance is the error allowed in computing the movement of babby's legs (FLOAT)
         '''
             
         #Servo Setup    
-        self.s1 = servo(s1,initDegree,minPos,maxPos)
-        self.s2 = servo(s2,initDegree,minPos,maxPos)
-        self.s3 = servo(s3,initDegree,minPos,maxPos)
-        self.s4 = servo(s4,initDegree,minPos,maxPos)
+        self.s1 = servo(s1,initAngle,minPulseTime,maxPulseTime)
+        self.s2 = servo(s2,initAngle,minPulseTime,maxPulseTime)
+        self.s3 = servo(s3,initAngle,minPulseTime,maxPulseTime)
+        self.s4 = servo(s4,initAngle,minPulseTime,maxPulseTime)
         
         self.maxSpeed = maxspeed
         self.speed = speed
@@ -42,7 +42,7 @@ class babby:
         self.timeSeparation = float(legdistance)/self.speed #Calculate the initial time separation
         
         #DC Motor Setup
-        self.cycle(float(speed)/maxspeed) * 100
+        self.cycle = (float(speed)/maxspeed) * 100
         self.m1 = motor(m1,cycle=self.cycle)
         self.m2 = motor(m2,cycle=self.cycle)
         self.m3 = motor(m3,cycle=self.cycle)
@@ -162,11 +162,11 @@ if __name__ == '__main__':
     m2 = #
     m3 = #
     m4 = #
-    minPos = #Set by servo specs
-    maxPos = #Set by servo specs
+    minPulseTime = #Set by servo specs
+    maxPulseTime = #Set by servo specs
     tolerance = #
     Babby = babby(initSpeed,maxSpeed,legDistance,baseHeight,strutHeight
                  s1,s2,s3,s4,m1,m2,m3,m4,
-                 minPos,maxPos,tolerance)
+                 minPulseTime,maxPulseTime,tolerance)
     Babby.run()
     Babby.end()

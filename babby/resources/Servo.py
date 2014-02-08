@@ -10,34 +10,51 @@ Servos Expect to receive a pulse every 20 ms => 50 times/sec => 50Hz
 
 import time
 import RPi.GPIO as GPIO
+import gc
 
 class servo:
-    def __init__(self,pin,degree,minPos,maxPos,freq=50.0):
-        '''minPos and maxPos are the pulse widths (in milliseconds)
-        which correspond to 0 degrees and 180 degrees, respectively'''
+    
+    def __init__(self,pin,initalAngle,minPulseTime,maxPulseTime,freq=50.0,angularOffset=0):
+        '''minPulseTime and maxPulseTime are the pulse widths (in milliseconds)
+        which correspond to 0 degrees and 180 degrees, respectively
+        ANGLES SHOULD BE KEPT IN DEGREES'''
+        
         GPIO.setup(pin,GPIO.OUT)
         self.pulseTime = 1.0/freq * (10**3) #Total Pulse [milliseconds]
-        self.lower = minPos / self.pulseTime
-        self.upper = maxPos / self.pulseTime
-        self.pin = GPIO.PWM(pin,freq)
-        self.setPosition(degree)
-        self.pin.start(self.cycle)
         
-    def getCycle(self):
-        #Uses affine map to calculate duty cycle from lower limit, upper limit and position
-        self.cycle = (self.lower*(1 - self.angle/180.0) + self.upper*(self.angle/180.0)) * 100
+        self.lower = minPulseTime / self.pulseTime
+        self.upper = maxPulseTime / self.pulseTime
+        
+        self.angularOffset = angularOffset
+        
+        self.pin = GPIO.PWM(pin,freq)         #Declare PWM pin
 
+        #Initialization
+        self.cycle = getCycle(initialAngle)
+        self.angle = initialAngle
+        self.pin.start( self.cycle )            
         
-    def setPosition(self,degree):
+        gc.collect() #Collect Garbage
+    
+    
+    def getCycle(self,angle):
+        #Uses affine map to calculate duty cycle from lower limit, upper limit and position
+        cycle = 100 * ( self.lower + (self.upper - self.lower) * self.angle / 180.0 ) / self.pulseTime 
+        gc.collect() #Collect Garbage
+        return cycle
+    
+    
+    def setPosition(self,angle):
         if (degree < self.lower) or (degree > self.upper):
             print 'Position outside of range'
             return
         else:
-            self.angle = degree
-            self.getCycle()
+            self.angle = angle - self.angularOffset
+            self.cycle = self.getCycle(angle)
             self.pin.ChangeDutyCycle(self.cycle)
-        
+   
+    
     def end(self):
         self.pin.stop()
-    
+        gc.collect() #Collect Garbage
         

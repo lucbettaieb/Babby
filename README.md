@@ -17,9 +17,10 @@ A Babby is a small robot which moves in a manner similar to that of NASA's ATHLE
 
 Right now, our babby is constructed with the following:
 
- - A Raspberry Pi (Model B)
- - An Arduino board (DeLuminave)
+ - A Raspberry Pi (Model B (Perhaps being removed))
+ - An Arduino board (Yún)
  - 4 DC Motors
+ - 2 Dual Channel Serial Motor Controllers (Perhaps going to be replaced with a simpler H-Bridge)
  - 4 Servo Motors
  - A LASER-cut wooden frame
  - An ultrasonic range finder
